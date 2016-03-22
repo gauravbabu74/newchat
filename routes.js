@@ -37,8 +37,20 @@ module.exports = function(app,io){
 
 		// When the client emits the 'load' event, reply with the 
 		// number of people in this chat room
+                // Retrieve
+               var MongoClient = require('mongodb').MongoClient;
 
-		socket.on('load',function(data){
+               // Connect to the db
+			MongoClient.connect("mongodb://localhost:27017/testDb", function(err, db) {
+				if(!err) {
+					console.log("We are connected");
+				}
+				else
+				{
+					console.log("We are not connected");
+				}
+			});
+			socket.on('load',function(data){
 			var room = findClientsSocket(io,data,'/socket');
                        // console.log(room);
 			if(room.length === 0 ) {
@@ -75,6 +87,11 @@ module.exports = function(app,io){
 				//socket.avatar = gravatar.url(data.avatar, {s: '140', r: 'x', d: 'mm'});
 
                                 socket.avatar = data.profileImage;
+                                
+                                if(socket.avatar === "#")
+                                {
+                                    socket.avatar = gravatar.url(data.avatar, {s: '140', r: 'x', d: 'mm'});
+                                }
 				// Tell the person what he should use for an avatar
 				socket.emit('img', socket.avatar);
 
